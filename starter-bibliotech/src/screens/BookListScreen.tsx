@@ -10,12 +10,13 @@
 //   - Navegação para a tela de formulário (criar / editar)
 // ============================================================================
 
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import React, { useEffect, useState } from "react";
-import { ActivityIndicator, Alert, FlatList, Pressable, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, Alert, FlatList, Pressable, StyleSheet, Text, View, TextInput } from "react-native";
 import { BookCard } from "../components/BookCard";
 import { useBooks } from "../contexts/BooksContext";
-import { BookFilter, loadFilter, saveFilter } from "../storage/preferences";
+import { loadFilter, saveFilter } from "../storage/preferences";
+import type { BookFilter } from "../storage/preferences";
 import type { Book } from "../types/Book";
 import type { RootStackParamList } from "../../App";
 
@@ -28,6 +29,14 @@ export function BookListScreen({ navigation }: Props) {
 
   // Estado local: o filtro selecionado pelo usuário
   const [filter, setFilter] = useState<BookFilter>("all");
+
+  // Estado local: o texto da busca por título
+  const [search, setSearch] = useState("");
+
+    // Estado local: controla se ordena por título ou por ano
+  const [sortBy, setSortBy] = useState<"titulo" | "ano">("titulo");
+
+
 
   // ------------------------------------------------------------------------
   // useEffect: ao montar a tela, busca o filtro que estava salvo da última vez
@@ -52,17 +61,27 @@ async function handleChangeFilter(novoFiltro: BookFilter) {
   // ------------------------------------------------------------------------
   // Aplica o filtro na lista vinda do Context.
   // ------------------------------------------------------------------------
-const livrosFiltrados: Book[] = books.filter((book) => {
-  if (filter === "read") {
-    return book.read === true;
-  }
+  const livrosFiltrados: Book[] = books
+    .filter((book) => {
+      // 1. Filtro de leitura
+      if (filter === "read" && book.read === false) return false;
+      if (filter === "unread" && book.read === true) return false;
+      return true;
+    })
+    .filter((book) => {
+      // 2. Filtro de Busca por título
+      if (search === "") return true;
+      return book.title.toLowerCase().includes(search.toLowerCase());
+    })
+    .sort((a, b) => {
+      // 3. Ordenação (NOVO)
+      if (sortBy === "ano") {
+        return b.year - a.year; // Mais recentes primeiro
+      } else {
+        return a.title.localeCompare(b.title); // Ordem alfabética (A-Z)
+      }
+    });
 
-  if (filter === "unread") {
-    return book.read === false;
-  }
-
-  return true;
-});
 
   // ------------------------------------------------------------------------
   // Confirmação antes de excluir
@@ -93,7 +112,26 @@ const livrosFiltrados: Book[] = books.filter((book) => {
   // ------------------------------------------------------------------------
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Minha Biblioteca</Text>
+      {/* Botões de Ordenação */}
+      <View style={styles.filters}>
+        <Text style={{ alignSelf: 'center', marginRight: 8, color: '#374151', fontWeight: '600' }}>Ordenar por:</Text>
+        <FilterButton label="Título (A-Z)" active={sortBy === "titulo"} onPress={() => setSortBy("titulo")} />
+        <FilterButton label="Ano (Mais novos)" active={sortBy === "ano"} onPress={() => setSortBy("ano")} />
+      </View>
+
+      {/* Barra de Busca */}
+      <TextInput
+        style={styles.searchInput}
+        placeholder="Buscar livro por título..."
+        value={search}
+        onChangeText={setSearch}
+      />
+
+      {/* Contador de Livros */}
+      <Text style={styles.counter}>
+        Mostrando {livrosFiltrados.length} {livrosFiltrados.length === 1 ? 'livro' : 'livros'}
+      </Text>
+
 
       {/* Botões de filtro */}
       <View style={styles.filters}>
@@ -120,8 +158,10 @@ const livrosFiltrados: Book[] = books.filter((book) => {
             book={item}
             onEdit={(b) => navigation.navigate("BookForm", { book: b })}
             onDelete={confirmDelete}
+            onPress={(b) => navigation.navigate("BookDetail", { book: b })}
           />
         )}
+
         ListEmptyComponent={
           !loading ? (
             <Text style={styles.empty}>Nenhum livro encontrado.</Text>
@@ -226,4 +266,21 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: "700",
   },
+  searchInput: {
+    backgroundColor: "#fff",
+    borderWidth: 1,
+    borderColor: "#e5e7eb",
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    marginBottom: 8,
+    fontSize: 16,
+  },
+  counter: {
+    fontSize: 14,
+    color: "#6b7280",
+    marginBottom: 8,
+    fontWeight: "500",
+  },
+
 });

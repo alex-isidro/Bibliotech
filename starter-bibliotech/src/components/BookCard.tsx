@@ -15,15 +15,17 @@ type BookCardProps = {
   book: Book;
   onEdit: (book: Book) => void;
   onDelete: (book: Book) => void;
+  onPress: (book: Book) => void;
 };
 
-export function BookCard({ book, onEdit, onDelete }: BookCardProps) {
+export function BookCard({ book, onEdit, onDelete, onPress }: BookCardProps) {
   // Monta uma string visual de estrelas baseada no rating (0 a 5).
   // Ex: rating=3 → "★★★☆☆"
   const stars = "★".repeat(book.rating) + "☆".repeat(5 - book.rating);
 
-  return (
-    <View style={styles.card}>
+return (
+    <Pressable style={styles.card} onPress={() => onPress(book)}>
+
       {/* Cabeçalho: título + status (lido/não lido) */}
       <View style={styles.header}>
         <Text style={styles.title} numberOfLines={2}>
@@ -56,7 +58,7 @@ export function BookCard({ book, onEdit, onDelete }: BookCardProps) {
           <Text style={styles.buttonText}>Excluir</Text>
         </Pressable>
       </View>
-    </View>
+    </Pressable>
   );
 }
 
