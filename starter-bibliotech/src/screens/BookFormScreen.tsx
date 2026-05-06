@@ -9,12 +9,6 @@
 //   - Campos do formulário (Inputs já estilizados)
 //   - Detecção do modo (criar vs editar) baseada nas params
 //   - Pré-preenchimento dos campos quando está em modo de edição
-//
-// >>> SUA TAREFA <<<
-//   1) Implementar a função `validar()` que checa todos os campos
-//   2) Implementar a função `handleSubmit()` que chama o Context
-//
-// Procure pelos TODOs.
 // ============================================================================
 
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -23,7 +17,7 @@ import { Alert, Pressable, ScrollView, StyleSheet, Switch, Text, View } from "re
 import { Input } from "../components/Input";
 import { useBooks } from "../contexts/BooksContext";
 import type { BookInput } from "../types/Book";
-import { RootStackParamList } from "../../App";
+import type{ RootStackParamList } from "../../App";
 
 type Props = NativeStackScreenProps<RootStackParamList, "BookForm">;
 

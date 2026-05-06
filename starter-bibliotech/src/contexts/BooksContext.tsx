@@ -7,13 +7,6 @@
 //   - Uma única fonte de verdade (não há duas listas inconsistentes)
 //   - Não precisa "passar props pra todo lado" (prop drilling)
 //   - Toda atualização (criar, editar, deletar) reflete em todas as telas
-//
-// >>> SUA TAREFA <<<
-//   1) Definir o que o Context vai expor (interface BooksContextValue)
-//   2) Implementar o Provider com estados e funções
-//   3) Implementar o hook customizado useBooks() que consome o Context
-//
-// O esqueleto está pronto - você só preenche os TODOs.
 // ============================================================================
 
 import React, { createContext, useCallback, useContext, useEffect, useState } from "react";

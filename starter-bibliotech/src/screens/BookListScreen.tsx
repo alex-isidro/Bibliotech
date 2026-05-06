@@ -8,14 +8,6 @@
 //   - Estrutura visual da tela (cabeçalho, lista, botão flutuante)
 //   - Confirmação antes de excluir (Alert)
 //   - Navegação para a tela de formulário (criar / editar)
-//
-// >>> SUA TAREFA <<<
-//   Implementar o FILTRO de visualização (all / read / unread):
-//   1) ler o filtro salvo no AsyncStorage ao montar a tela
-//   2) salvar o filtro toda vez que o usuário trocar
-//   3) aplicar o filtro na lista exibida
-//
-// Procure pelos TODOs abaixo.
 // ============================================================================
 
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -25,7 +17,7 @@ import { BookCard } from "../components/BookCard";
 import { useBooks } from "../contexts/BooksContext";
 import { BookFilter, loadFilter, saveFilter } from "../storage/preferences";
 import type { Book } from "../types/Book";
-import { RootStackParamList } from "../../App";
+import type { RootStackParamList } from "../../App";
 
 // Tipo das props quando esta tela é usada via React Navigation
 type Props = NativeStackScreenProps<RootStackParamList, "BookList">;

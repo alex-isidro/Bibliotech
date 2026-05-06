@@ -10,9 +10,6 @@
 //   - Para guardar objetos/arrays, precisamos:
 //       Salvar : JSON.stringify(objeto) → vira texto
 //       Ler    : JSON.parse(texto)      → vira objeto de novo
-//
-// >>> SUA TAREFA <<<
-// Implementar 4 funções marcadas com TODO.
 // ============================================================================
 
 import AsyncStorage from "@react-native-async-storage/async-storage";

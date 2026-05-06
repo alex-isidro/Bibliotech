@@ -7,11 +7,6 @@
 //  - Facilita trocar de biblioteca (axios → fetch) sem mexer nas telas
 //  - Centraliza tratamento de erro
 //  - Deixa os componentes mais limpos (eles só chamam funções nomeadas)
-//
-// >>> SUA TAREFA <<<
-// Implementar as 5 funções marcadas com TODO logo abaixo.
-// Cada função consome um endpoint diferente da API.
-// Consulte o Swagger em http://localhost:3000/api-docs se tiver dúvidas.
 // ============================================================================
 
 import axios from "axios";
@@ -43,7 +38,7 @@ const api = axios.create({
  * Lista TODOS os livros.
  */
 export async function listBooks(): Promise<Book[]> {
-  const response = await api.get("/books");
+  const response = await api.get<Book[]>("/books");
   return response.data;
 }
 
@@ -52,7 +47,7 @@ export async function listBooks(): Promise<Book[]> {
  * Busca UM livro pelo id.
  */
 export async function getBook(id: number): Promise<Book> {
-  const response = await api.get(`/books/${id}`);
+  const response = await api.get<Book>(`/books/${id}`);
   return response.data;
 }
 
@@ -62,7 +57,7 @@ export async function getBook(id: number): Promise<Book> {
  * Cria um novo livro. Recebe um BookInput (sem id) e a API devolve o Book com id.
  */
 export async function createBook(input: BookInput): Promise<Book> {
-  const response = await api.post("/books", input);
+  const response = await api.post<Book>("/books", input);
   return response.data;
 }
 
@@ -72,7 +67,7 @@ export async function createBook(input: BookInput): Promise<Book> {
  * Atualiza um livro existente.
  */
 export async function updateBook(id: number, input: BookInput): Promise<Book> {
-  const response = await api.put(`/books/${id}`, input);
+  const response = await api.put<Book>(`/books/${id}`, input);
   return response.data;
 }
 
