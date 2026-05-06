@@ -9,12 +9,6 @@
 //   - Campos do formulário (Inputs já estilizados)
 //   - Detecção do modo (criar vs editar) baseada nas params
 //   - Pré-preenchimento dos campos quando está em modo de edição
-//
-// >>> SUA TAREFA <<<
-//   1) Implementar a função `validar()` que checa todos os campos
-//   2) Implementar a função `handleSubmit()` que chama o Context
-//
-// Procure pelos TODOs.
 // ============================================================================
 
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -23,7 +17,7 @@ import { Alert, Pressable, ScrollView, StyleSheet, Switch, Text, View } from "re
 import { Input } from "../components/Input";
 import { useBooks } from "../contexts/BooksContext";
 import type { BookInput } from "../types/Book";
-import { RootStackParamList } from "../../App";
+import type{ RootStackParamList } from "../../App";
 
 type Props = NativeStackScreenProps<RootStackParamList, "BookForm">;
 
@@ -70,33 +64,56 @@ export function BookFormScreen({ route, navigation }: Props) {
    * Verifica todos os campos do formulário e devolve um objeto de erros.
    * Se o objeto estiver VAZIO, não há erros.
    */
-  function validar(): FormErrors {
-    const novosErros: FormErrors = {};
+function validar(): FormErrors {
+  const novosErros: FormErrors = {};
 
-    // TODO: implemente as regras de validação abaixo.
-    //
-    // REGRAS:
-    //   title  : obrigatório, mínimo 2 caracteres
-    //   author : obrigatório, mínimo 2 caracteres
-    //   year   : obrigatório, número entre 1000 e o ano atual
-    //   genre  : obrigatório
-    //   rating : número entre 0 e 5
-    //
-    // EXEMPLO de como atribuir um erro:
-    //   if (!title.trim()) {
-    //     novosErros.title = "Título é obrigatório";
-    //   } else if (title.trim().length < 2) {
-    //     novosErros.title = "Título deve ter ao menos 2 caracteres";
-    //   }
-    //
-    // DICAS:
-    //   - Use .trim() para ignorar espaços em branco no começo/fim
-    //   - Para converter string em número: Number(year) ou parseInt(year, 10)
-    //   - Number("abc") devolve NaN. Verifique com isNaN(numero).
-    //   - Ano atual: new Date().getFullYear()
+  const titleTrimmed = title.trim();
+  const authorTrimmed = author.trim();
+  const genreTrimmed = genre.trim();
 
-    return novosErros;
+  const yearNumber = Number(year);
+  const ratingNumber = Number(rating);
+  const anoAtual = new Date().getFullYear();
+
+  // Validação do Título
+  if (!titleTrimmed) {
+    novosErros.title = "Título é obrigatório.";
+  } else if (titleTrimmed.length < 2) {
+    novosErros.title = "Título deve ter ao menos 2 caracteres.";
   }
+
+  // Validação do Autor
+  if (!authorTrimmed) {
+    novosErros.author = "Autor é obrigatório.";
+  } else if (authorTrimmed.length < 2) {
+    novosErros.author = "Autor deve ter ao menos 2 caracteres.";
+  }
+
+  // Validação do Ano
+  if (!year.trim()) {
+    novosErros.year = "Ano é obrigatório.";
+  } else if (Number.isNaN(yearNumber)) {
+    novosErros.year = "Ano deve ser um número.";
+  } else if (yearNumber < 1000 || yearNumber > anoAtual) {
+    novosErros.year = `Ano deve estar entre 1000 e ${anoAtual}.`;
+  }
+
+  // Validação do Gênero
+  if (!genreTrimmed) {
+    novosErros.genre = "Gênero é obrigatório.";
+  }
+
+  // Validação da Nota
+  if (!rating.trim()) {
+    novosErros.rating = "Nota é obrigatória.";
+  } else if (Number.isNaN(ratingNumber)) {
+    novosErros.rating = "Nota deve ser um número.";
+  } else if (ratingNumber < 0 || ratingNumber > 5) {
+    novosErros.rating = "Nota deve estar entre 0 e 5.";
+  }
+
+  return novosErros;
+}
 
   // ------------------------------------------------------------------------
   // SUBMIT
@@ -124,16 +141,13 @@ export function BookFormScreen({ route, navigation }: Props) {
     // 3) envia para a API através do Context
     setSubmitting(true);
     try {
-      // TODO:
-      //   - Se está em modo de edição (isEdicao === true):
-      //       chame editBook(livroExistente.id, input)
-      //   - Caso contrário:
-      //       chame addBook(input)
-      //
-      //   Depois, navegue de volta para a lista com:
-      //       navigation.goBack();
-
-      Alert.alert("Atenção", "handleSubmit() ainda não foi implementada.");
+      if (isEdicao && livroExistente) {
+        await editBook(livroExistente.id, input);
+      } else {
+        await addBook(input);
+      }
+      
+      navigation.goBack();
     } catch (e) {
       // Se a API recusar (ex: erro 400), mostra um alerta.
       Alert.alert("Erro", "Não foi possível salvar o livro. Tente novamente.");

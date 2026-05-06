@@ -8,14 +8,6 @@
 //   - Estrutura visual da tela (cabeçalho, lista, botão flutuante)
 //   - Confirmação antes de excluir (Alert)
 //   - Navegação para a tela de formulário (criar / editar)
-//
-// >>> SUA TAREFA <<<
-//   Implementar o FILTRO de visualização (all / read / unread):
-//   1) ler o filtro salvo no AsyncStorage ao montar a tela
-//   2) salvar o filtro toda vez que o usuário trocar
-//   3) aplicar o filtro na lista exibida
-//
-// Procure pelos TODOs abaixo.
 // ============================================================================
 
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -25,7 +17,7 @@ import { BookCard } from "../components/BookCard";
 import { useBooks } from "../contexts/BooksContext";
 import { BookFilter, loadFilter, saveFilter } from "../storage/preferences";
 import type { Book } from "../types/Book";
-import { RootStackParamList } from "../../App";
+import type { RootStackParamList } from "../../App";
 
 // Tipo das props quando esta tela é usada via React Navigation
 type Props = NativeStackScreenProps<RootStackParamList, "BookList">;
@@ -40,35 +32,37 @@ export function BookListScreen({ navigation }: Props) {
   // ------------------------------------------------------------------------
   // useEffect: ao montar a tela, busca o filtro que estava salvo da última vez
   // ------------------------------------------------------------------------
-  useEffect(() => {
-    // TODO: chame loadFilter() (do arquivo storage/preferences.ts) e
-    //       atualize o estado `filter` com o resultado.
-    //       Como loadFilter é assíncrono, você precisa de uma função interna:
-    //
-    //   async function carregarFiltroSalvo() {
-    //     const salvo = await loadFilter();
-    //     setFilter(salvo);
-    //   }
-    //   carregarFiltroSalvo();
-  }, []);
+useEffect(() => {
+  async function carregarFiltroSalvo() {
+    const filtroSalvo = await loadFilter();
+    setFilter(filtroSalvo);
+  }
+
+  carregarFiltroSalvo();
+}, []);
 
   // ------------------------------------------------------------------------
   // Função chamada quando o usuário toca em um botão de filtro.
   // ------------------------------------------------------------------------
-  async function handleChangeFilter(novoFiltro: BookFilter) {
-    setFilter(novoFiltro);
-    // TODO: persistir o novoFiltro no AsyncStorage usando saveFilter().
-  }
+async function handleChangeFilter(novoFiltro: BookFilter) {
+  setFilter(novoFiltro);
+  await saveFilter(novoFiltro);
+}
 
   // ------------------------------------------------------------------------
   // Aplica o filtro na lista vinda do Context.
   // ------------------------------------------------------------------------
-  // TODO: implemente a função para retornar a lista FILTRADA conforme `filter`:
-  //   - "all"    : devolve `books` inteiro
-  //   - "read"   : só os livros com book.read === true
-  //   - "unread" : só os livros com book.read === false
-  // Por enquanto está retornando tudo (substitua a lógica abaixo).
-  const livrosFiltrados: Book[] = books;
+const livrosFiltrados: Book[] = books.filter((book) => {
+  if (filter === "read") {
+    return book.read === true;
+  }
+
+  if (filter === "unread") {
+    return book.read === false;
+  }
+
+  return true;
+});
 
   // ------------------------------------------------------------------------
   // Confirmação antes de excluir

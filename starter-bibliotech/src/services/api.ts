@@ -7,11 +7,6 @@
 //  - Facilita trocar de biblioteca (axios → fetch) sem mexer nas telas
 //  - Centraliza tratamento de erro
 //  - Deixa os componentes mais limpos (eles só chamam funções nomeadas)
-//
-// >>> SUA TAREFA <<<
-// Implementar as 5 funções marcadas com TODO logo abaixo.
-// Cada função consome um endpoint diferente da API.
-// Consulte o Swagger em http://localhost:3000/api-docs se tiver dúvidas.
 // ============================================================================
 
 import axios from "axios";
@@ -43,10 +38,8 @@ const api = axios.create({
  * Lista TODOS os livros.
  */
 export async function listBooks(): Promise<Book[]> {
-  // TODO: faça uma requisição GET para "/books" usando o `api` (axios).
-  // Dica: o axios devolve { data, status, ... }. Você só quer o data.
-  // Dica 2: como a função é async, você pode usar await.
-  throw new Error("listBooks() ainda não foi implementada");
+  const response = await api.get<Book[]>("/books");
+  return response.data;
 }
 
 /**
@@ -54,38 +47,39 @@ export async function listBooks(): Promise<Book[]> {
  * Busca UM livro pelo id.
  */
 export async function getBook(id: number): Promise<Book> {
-  // TODO: faça uma requisição GET para `/books/${id}` e retorne o livro.
-  throw new Error("getBook() ainda não foi implementada");
+  const response = await api.get<Book>(`/books/${id}`);
+  return response.data;
 }
+
 
 /**
  * POST /books
  * Cria um novo livro. Recebe um BookInput (sem id) e a API devolve o Book com id.
  */
 export async function createBook(input: BookInput): Promise<Book> {
-  // TODO: faça um POST em "/books" enviando o `input` no body.
-  // Com axios: api.post("/books", input)
-  throw new Error("createBook() ainda não foi implementada");
+  const response = await api.post<Book>("/books", input);
+  return response.data;
 }
+
 
 /**
  * PUT /books/:id
  * Atualiza um livro existente.
  */
 export async function updateBook(id: number, input: BookInput): Promise<Book> {
-  // TODO: faça um PUT em `/books/${id}` enviando o `input` no body.
-  throw new Error("updateBook() ainda não foi implementada");
+  const response = await api.put<Book>(`/books/${id}`, input);
+  return response.data;
 }
+
 
 /**
  * DELETE /books/:id
  * Remove um livro.
  */
 export async function deleteBook(id: number): Promise<void> {
-  // TODO: faça um DELETE em `/books/${id}`.
-  // Não precisa retornar nada - por isso o tipo é Promise<void>.
-  throw new Error("deleteBook() ainda não foi implementada");
+  await api.delete(`/books/${id}`);
 }
+
 
 // ============================================================================
 // EXEMPLO COMENTADO DE COMO USAR ESSAS FUNÇÕES (NÃO PRECISA EDITAR):

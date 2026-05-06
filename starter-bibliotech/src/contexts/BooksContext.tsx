@@ -7,13 +7,6 @@
 //   - Uma única fonte de verdade (não há duas listas inconsistentes)
 //   - Não precisa "passar props pra todo lado" (prop drilling)
 //   - Toda atualização (criar, editar, deletar) reflete em todas as telas
-//
-// >>> SUA TAREFA <<<
-//   1) Definir o que o Context vai expor (interface BooksContextValue)
-//   2) Implementar o Provider com estados e funções
-//   3) Implementar o hook customizado useBooks() que consome o Context
-//
-// O esqueleto está pronto - você só preenche os TODOs.
 // ============================================================================
 
 import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
@@ -36,12 +29,12 @@ type BooksContextValue = {
   books: Book[];
   loading: boolean;
   error: string | null;
-  // TODO: declare aqui os métodos que o Context vai expor.
-  // reload: () => Promise<void>;
-  // addBook: (input: BookInput) => Promise<void>;
-  // editBook: (id: number, input: BookInput) => Promise<void>;
-  // removeBook: (id: number) => Promise<void>;
+  reload: () => Promise<void>;
+  addBook: (input: BookInput) => Promise<void>;
+  editBook: (id: number, input: BookInput) => Promise<void>;
+  removeBook: (id: number) => Promise<void>;
 };
+
 
 // ----------------------------------------------------------------------------
 // 2) CRIA O CONTEXT
@@ -67,50 +60,73 @@ export function BooksProvider({ children }: BooksProviderProps) {
   // reload(): busca a lista de livros na API e atualiza o estado
   // ------------------------------------------------------------------------
   const reload = useCallback(async () => {
-    // TODO:
-    //   1) setLoading(true) e setError(null)
-    //   2) chame api.listBooks() dentro de um try/catch
-    //   3) em sucesso: setBooks(resultado)
-    //   4) em erro: setError("mensagem amigável")
-    //   5) no finally: setLoading(false)
-    throw new Error("reload() ainda não foi implementada");
+    setLoading(true);
+    setError(null);
+    try {
+      const resultado = await api.listBooks();
+      setBooks(resultado);
+    } catch (e) {
+      setError("Não foi possível carregar a lista de livros.");
+    } finally {
+      setLoading(false);
+    }
   }, []);
+
 
   // ------------------------------------------------------------------------
   // addBook(input): cria um novo livro
   // ------------------------------------------------------------------------
   const addBook = useCallback(async (input: BookInput) => {
-    // TODO: chame api.createBook(input) e adicione o livro retornado ao estado.
-    // Dica: para adicionar sem perder os antigos, use:
-    //   setBooks(prev => [...prev, novoLivro])
-    throw new Error("addBook() ainda não foi implementada");
+    setError(null);
+
+    try {
+      const novoLivro = await api.createBook(input);
+      setBooks((prev) => [...prev, novoLivro]);
+    } catch (e) {
+      setError("Não foi possível adicionar o livro.");
+      throw e;
+    }
   }, []);
 
   // ------------------------------------------------------------------------
   // editBook(id, input): atualiza um livro existente
   // ------------------------------------------------------------------------
   const editBook = useCallback(async (id: number, input: BookInput) => {
-    // TODO: chame api.updateBook(id, input).
-    // Substitua o livro antigo pelo atualizado:
-    //   setBooks(prev => prev.map(b => b.id === id ? livroAtualizado : b))
-    throw new Error("editBook() ainda não foi implementada");
+    setError(null);
+
+    try {
+      const livroAtualizado = await api.updateBook(id, input);
+
+      setBooks((prev) =>
+        prev.map((book) => (book.id === id ? livroAtualizado : book))
+      );
+    } catch (e) {
+      setError("Não foi possível editar o livro.");
+      throw e;
+    }
   }, []);
 
   // ------------------------------------------------------------------------
   // removeBook(id): deleta um livro
   // ------------------------------------------------------------------------
   const removeBook = useCallback(async (id: number) => {
-    // TODO: chame api.deleteBook(id).
-    // Remova do estado:
-    //   setBooks(prev => prev.filter(b => b.id !== id))
-    throw new Error("removeBook() ainda não foi implementada");
+    setError(null);
+
+    try {
+      await api.deleteBook(id);
+
+      setBooks((prev) => prev.filter((book) => book.id !== id));
+    } catch (e) {
+      setError("Não foi possível remover o livro.");
+      throw e;
+    }
   }, []);
 
   // ------------------------------------------------------------------------
   // useEffect: carrega a lista assim que o Provider monta
   // ------------------------------------------------------------------------
   useEffect(() => {
-    // TODO: chame reload() aqui para popular a lista no início.
+    reload();
   }, [reload]);
 
   // ------------------------------------------------------------------------
@@ -120,8 +136,10 @@ export function BooksProvider({ children }: BooksProviderProps) {
     books,
     loading,
     error,
-    // TODO: inclua reload, addBook, editBook, removeBook aqui também
-    // depois de declará-los no tipo BooksContextValue lá em cima.
+    reload,
+    addBook,
+    editBook,
+    removeBook,
   };
 
   return <BooksContext.Provider value={value}>{children}</BooksContext.Provider>;
