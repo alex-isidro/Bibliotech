@@ -11,13 +11,13 @@
 //   - Pré-preenchimento dos campos quando está em modo de edição
 // ============================================================================
 
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import React, { useState } from "react";
 import { Alert, Pressable, ScrollView, StyleSheet, Switch, Text, View } from "react-native";
 import { Input } from "../components/Input";
 import { useBooks } from "../contexts/BooksContext";
 import type { BookInput } from "../types/Book";
-import type{ RootStackParamList } from "../../App";
+import type { RootStackParamList } from "../../App";
 
 type Props = NativeStackScreenProps<RootStackParamList, "BookForm">;
 

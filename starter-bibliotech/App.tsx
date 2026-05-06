@@ -25,6 +25,7 @@ import { StatusBar } from "expo-status-bar";
 import { BooksProvider } from "./src/contexts/BooksContext";
 import { BookFormScreen } from "./src/screens/BookFormScreen";
 import { BookListScreen } from "./src/screens/BookListScreen";
+import { BookDetailScreen } from "./src/screens/BookDetailScreen";
 import type { Book } from "./src/types/Book";
 
 // ----------------------------------------------------------------------------
@@ -39,7 +40,9 @@ import type { Book } from "./src/types/Book";
 export type RootStackParamList = {
   BookList: undefined;
   BookForm: { book?: Book };
+  BookDetail: { book: Book }; 
 };
+
 
 // Cria o stack navigator já com a tipagem
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -65,6 +68,11 @@ export default function App() {
             name="BookForm"
             component={BookFormScreen}
             options={{ title: "Livro" }}
+          />
+          <Stack.Screen
+            name="BookDetail"
+            component={BookDetailScreen}
+            options={{ title: "Detalhes do Livro" }}
           />
         </Stack.Navigator>
         <StatusBar style="light" />
