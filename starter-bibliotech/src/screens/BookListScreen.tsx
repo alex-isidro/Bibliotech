@@ -40,35 +40,37 @@ export function BookListScreen({ navigation }: Props) {
   // ------------------------------------------------------------------------
   // useEffect: ao montar a tela, busca o filtro que estava salvo da última vez
   // ------------------------------------------------------------------------
-  useEffect(() => {
-    // TODO: chame loadFilter() (do arquivo storage/preferences.ts) e
-    //       atualize o estado `filter` com o resultado.
-    //       Como loadFilter é assíncrono, você precisa de uma função interna:
-    //
-    //   async function carregarFiltroSalvo() {
-    //     const salvo = await loadFilter();
-    //     setFilter(salvo);
-    //   }
-    //   carregarFiltroSalvo();
-  }, []);
+useEffect(() => {
+  async function carregarFiltroSalvo() {
+    const filtroSalvo = await loadFilter();
+    setFilter(filtroSalvo);
+  }
+
+  carregarFiltroSalvo();
+}, []);
 
   // ------------------------------------------------------------------------
   // Função chamada quando o usuário toca em um botão de filtro.
   // ------------------------------------------------------------------------
-  async function handleChangeFilter(novoFiltro: BookFilter) {
-    setFilter(novoFiltro);
-    // TODO: persistir o novoFiltro no AsyncStorage usando saveFilter().
-  }
+async function handleChangeFilter(novoFiltro: BookFilter) {
+  setFilter(novoFiltro);
+  await saveFilter(novoFiltro);
+}
 
   // ------------------------------------------------------------------------
   // Aplica o filtro na lista vinda do Context.
   // ------------------------------------------------------------------------
-  // TODO: implemente a função para retornar a lista FILTRADA conforme `filter`:
-  //   - "all"    : devolve `books` inteiro
-  //   - "read"   : só os livros com book.read === true
-  //   - "unread" : só os livros com book.read === false
-  // Por enquanto está retornando tudo (substitua a lógica abaixo).
-  const livrosFiltrados: Book[] = books;
+const livrosFiltrados: Book[] = books.filter((book) => {
+  if (filter === "read") {
+    return book.read === true;
+  }
+
+  if (filter === "unread") {
+    return book.read === false;
+  }
+
+  return true;
+});
 
   // ------------------------------------------------------------------------
   // Confirmação antes de excluir

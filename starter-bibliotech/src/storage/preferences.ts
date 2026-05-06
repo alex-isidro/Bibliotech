@@ -43,42 +43,53 @@ export type BookFilter = "all" | "read" | "unread";
  * Salva o filtro escolhido pelo usuário (all / read / unread).
  */
 export async function saveFilter(filter: BookFilter): Promise<void> {
-  // TODO: use AsyncStorage.setItem(...) para salvar `filter` na chave KEY_FILTER.
-  // Dica: como filter já é uma string, NÃO precisa de JSON.stringify aqui.
-  throw new Error("saveFilter() ainda não foi implementada");
+  await AsyncStorage.setItem(KEY_FILTER, filter);
 }
 
 /**
  * Lê o filtro salvo. Se nunca foi salvo, retorna "all" como padrão.
  */
 export async function loadFilter(): Promise<BookFilter> {
-  // TODO: use AsyncStorage.getItem(...) com KEY_FILTER.
-  // O getItem pode retornar null se nada nunca foi salvo.
-  // Trate esse caso retornando "all".
-  // Dica: se o valor existir, faça um cast para BookFilter.
-  throw new Error("loadFilter() ainda não foi implementada");
+  const savedFilter = await AsyncStorage.getItem(KEY_FILTER);
+
+  if (
+    savedFilter === "all" ||
+    savedFilter === "read" ||
+    savedFilter === "unread"
+  ) {
+    return savedFilter;
+  }
+
+  return "all";
 }
+
 
 /**
  * Salva o ID do último livro que o usuário visualizou em detalhes.
  * Útil para abrir o app já no último livro consultado.
  */
 export async function saveLastViewedId(id: number): Promise<void> {
-  // TODO: salve `id` na chave KEY_LAST_VIEWED.
-  // Atenção: AsyncStorage só aceita STRING. Use String(id) ou id.toString().
-  throw new Error("saveLastViewedId() ainda não foi implementada");
+  await AsyncStorage.setItem(KEY_LAST_VIEWED, String(id));
 }
 
 /**
  * Lê o ID do último livro visualizado. Retorna null se nunca foi salvo.
  */
 export async function loadLastViewedId(): Promise<number | null> {
-  // TODO: leia o valor da chave KEY_LAST_VIEWED.
-  // Se vier null (nunca foi salvo), retorne null.
-  // Se vier uma string, converta para número usando Number(...)
-  throw new Error("loadLastViewedId() ainda não foi implementada");
-}
+  const savedId = await AsyncStorage.getItem(KEY_LAST_VIEWED);
 
+  if (savedId === null) {
+    return null;
+  }
+
+  const id = Number(savedId);
+
+  if (Number.isNaN(id)) {
+    return null;
+  }
+
+  return id;
+}
 // ============================================================================
 // COMO USAR (exemplo - não precisa editar):
 // ============================================================================
