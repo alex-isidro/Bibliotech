@@ -1,0 +1,53 @@
+PARTE 1 — LEITURA DO SWAGGER
+
+1.1 — ENDPOINTS
+
+GET /books — Lista todos os livros cadastrados. Também permite filtrar por status de leitura usando ?read=true ou ?read=false.
+
+GET /books/{id} — Busca um livro específico pelo ID.
+
+POST /books — Cadastra um novo livro. O ID é gerado automaticamente pela API.
+
+PUT /books/{id} — Atualiza todos os dados de um livro existente.
+
+DELETE /books/{id} — Remove um livro existente pelo ID.
+
+
+1.2 — MODELO DE DADOS
+
+Book:
+- id: number — identificador único do livro, gerado pela API.
+- title: string — título do livro.
+- author: string — autor do livro.
+- year: number — ano de publicação.
+- genre: string — gênero do livro.
+- read: boolean — indica se o livro já foi lido.
+- rating: number — nota do livro, de 0 a 5.
+
+BookInput:
+Campos obrigatórios:
+- title
+- author
+- year
+- genre
+
+Campos opcionais:
+- read
+- rating
+
+Regras principais:
+- title deve ter no mínimo 2 caracteres.
+- author deve ter no mínimo 2 caracteres.
+- year deve ser um número a partir de 1000.
+- rating deve ser um número entre 0 e 5.
+
+
+1.3 — CÓDIGOS HTTP
+
+200 — Requisição executada com sucesso, como listagem, busca, atualização ou remoção.
+
+201 — Livro criado com sucesso no POST /books.
+
+400 — Dados inválidos enviados no POST ou PUT.
+
+404 — Livro não encontrado quando o ID informado não existe.
